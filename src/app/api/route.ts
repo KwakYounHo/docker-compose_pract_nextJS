@@ -28,7 +28,6 @@ export const POST = async (request: NextRequest) => {
         }
       );
     } else {
-      console.log(message);
       return Response.json(message.data, {
         status: 201,
         headers: {
@@ -102,8 +101,6 @@ export const DELETE = async (request: NextRequest) => {
       },
     });
     const message: ResponseData = await response.json();
-
-    console.log(message);
 
     if (message.error) {
       return Response.json(
