@@ -91,3 +91,42 @@ export const PUT = async (request: NextRequest) => {
     );
   }
 };
+
+export const DELETE = async (request: NextRequest) => {
+  try {
+    const { key } = await request.json();
+    const response = await fetch(`${process.env.SERVER_URL}/${key}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const message: ResponseData = await response.json();
+
+    console.log(message);
+
+    if (message.error) {
+      return Response.json(
+        { error: message.error },
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    } else {
+      return Response.json(message.data, {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    return Response.json(
+      { error: "Server error" },
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
