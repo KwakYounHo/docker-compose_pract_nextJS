@@ -1,22 +1,36 @@
-interface ResponseData {
-  message: string;
+import { NextRequest } from "next/server";
+
+export interface ResponseData {
+  error?: string;
+  data?: string;
 }
 
-export const GET = async () => {
+export const POST = async (request: NextRequest) => {
   try {
-    const response = await fetch(`${process.env.SERVER_URL}`);
+    const body = await request.json();
+    const response = await fetch(`${process.env.SERVER_URL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
     const message: ResponseData = await response.json();
 
-    if (message.message) {
-      return Response.json(message.message, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    if (message.error) {
+      return Response.json(
+        { error: message.error },
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } else {
-      return Response.json(message, {
-        status: 404,
+      console.log(message);
+      return Response.json(message.data, {
+        status: 201,
         headers: {
           "Content-Type": "application/json",
         },
@@ -24,11 +38,56 @@ export const GET = async () => {
     }
   } catch (e) {
     console.error(e);
-    return Response.json(String(e), {
-      status: 500,
+    return Response.json(
+      { error: "server error" },
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
+
+export const PUT = async (request: NextRequest) => {
+  try {
+    const { key, data } = await request.json();
+    const response = await fetch(`${process.env.SERVER_URL}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ key, data }),
     });
+    const message: ResponseData = await response.json();
+
+    if (message.error) {
+      return Response.json(
+        { error: message.error },
+        {
+          status: 402,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } else {
+      return Response.json(message.data, {
+        status: 202,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    return Response.json(
+      { error: "Server error" },
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
