@@ -7,7 +7,9 @@ export const GET = async (
 ) => {
   try {
     const { key } = params;
-    const response = await fetch(`${process.env.SERVER_URL}/${key}`);
+    const response = await fetch(`${process.env.SERVER_URL}/${key}`, {
+      cache: "no-store",
+    });
     const message: ResponseData = await response.json();
 
     if (message.data) {
@@ -15,6 +17,7 @@ export const GET = async (
         status: 200,
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-store",
         },
       });
     } else {
@@ -22,6 +25,7 @@ export const GET = async (
         status: 404,
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-store",
         },
       });
     }
@@ -31,6 +35,7 @@ export const GET = async (
       status: 500,
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-store",
       },
     });
   }
